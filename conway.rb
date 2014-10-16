@@ -36,11 +36,12 @@ end
 
 class Board
 
-  attr_accessor :cells, :grid_size
+  attr_accessor :cells, :grid_size, :size_x, :size_y
 
-  def initialize(cells)
+  def initialize(cells, x, y)
     @cells = cells
-    @grid_size = Math.sqrt(cells.size)
+    @size_x = x
+    @size_y = y
   end
 
   def all_alive
@@ -73,29 +74,30 @@ class Board
     @cells.each_with_index do |cell, index|
       print "X".colorize(alive_color) if cell.alive
       print "O".colorize(dead_color) if !cell.alive
-      puts "" if (index + 1) % Math.sqrt(@cells.size) == 0
+      puts "" if (index + 1) % @size_x  == 0
     end
   end
 
   def glider
+    print @size_x.class
     (0.. 2).to_a.each do |x|
-      @cells[x + grid_size * 2].alive = true 
-      @cells[x + grid_size].alive = true if x == 2
+      @cells[x + @size_x * 2].alive = true 
+      @cells[x + @size_x].alive = true if x == 2
       @cells[x].alive = true if x == 1
     end
   end
 
 end
 
-def generate_cells(size)
+def generate_cells(size_x, size_y)
   hold = []
-  size.times do |x|
-    size.times do |y|
+  size_x.times do |x|
+    size_y.times do |y|
       hold << Cell.new(x, y) 
     end
   end
   return hold
 end
 
-start = Board.new(generate_cells(25))
+start = Board.new(generate_cells(25, 25), 25, 25)
 start.play("glider")
