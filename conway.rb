@@ -1,4 +1,5 @@
-require 'colorize'
+require 'rainbow'
+require 'rainbow/ext/string'
 
 class Cell
 
@@ -76,8 +77,8 @@ class Board
 
   def display(alive_color, dead_color)
     @cells.each_with_index do |cell, index|
-      print "X".colorize(alive_color) if cell.alive
-      print "O".colorize(dead_color) if !cell.alive
+      print "X".background(alive_color) if cell.alive
+      print "O".background(dead_color) if !cell.alive
       puts "" if (index + 1) % @size_x  == 0
     end
   end
