@@ -1,6 +1,5 @@
 require_relative 'conway'
 require_relative 'starting_uni'
-require 'pry'
 
 class Board
 
