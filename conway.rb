@@ -10,12 +10,16 @@ class Cell
     @alive = alive
   end
 
-  def rule_impose(board, set_iter)
-    @alive = false if alive_neighbor_count(board, set_iter) < 2
-    @alive = true if @alive == true && (alive_neighbor_count(board, set_iter) == 2 || 
-                                        alive_neighbor_count(board, set_iter) == 3)
-    @alive = true if @alive == false && alive_neighbor_count(board, set_iter) == 3
-    @alive = false if alive_neighbor_count(board, set_iter) > 3
+  def rule_impose(set_iter)
+    if @alive == false
+      @alive = true if alive_neighbor_count(set_iter) == 3
+    else
+      @alive = false if alive_neighbor_count(set_iter) < 2
+      @alive = true if (alive_neighbor_count(set_iter) == 2 || 
+                                        alive_neighbor_count(set_iter) == 3)
+
+      @alive = false if alive_neighbor_count(set_iter) > 3
+    end
   end
 
   def neighbor_find
@@ -28,7 +32,7 @@ class Cell
     neighbor_array
   end
 
-  def alive_neighbor_count(board, set_iter)
+  def alive_neighbor_count(set_iter)
     (set_iter & self.neighbor_find).size
   end
 
@@ -46,14 +50,14 @@ class Board
 
   def all_alive
     hold = []
-    @cells.each { |cell| hold << [cell.x, cell.y] if cell.alive }
+    @cells.each { |cell| hold << [cell.x, cell.y] if cell.alive == true }
     return hold
   end
 
   def mass_out
     set_iter = self.all_alive
     @cells.each do |cell|
-      cell.rule_impose(self, set_iter)
+      cell.rule_impose(set_iter)
     end
   end
 
@@ -65,8 +69,8 @@ class Board
 
     system('clear')
     display(alive_color, dead_color)
+    sleep(0.1)
     mass_out
-    
     play(type = "in_progress", alive_color, dead_color)
   end
 
@@ -78,26 +82,15 @@ class Board
     end
   end
 
-  def glider
-    print @size_x.class
-    (0.. 2).to_a.each do |x|
-      @cells[x + @size_x * 2].alive = true 
-      @cells[x + @size_x].alive = true if x == 2
-      @cells[x].alive = true if x == 1
-    end
-  end
-
 end
 
 def generate_cells(size_x, size_y)
   hold = []
-  size_x.times do |x|
-    size_y.times do |y|
+  size_y.times do |y|
+    size_x.times do |x|
       hold << Cell.new(x, y) 
     end
   end
   return hold
 end
 
-start = Board.new(generate_cells(25, 25), 25, 25)
-start.play("glider")
